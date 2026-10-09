@@ -1,0 +1,50 @@
+FROM debian:bookworm-slim AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /src
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    automake build-essential ca-certificates curl file git libprotobuf-dev \
+    libyaml-dev m4 perl pkg-config procps unzip valgrind zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . .
+RUN make package/deb \
+    && install -D bazel-bin/pkg/kong.amd64.deb /out/kong.deb
+
+FROM debian:bookworm-slim
+
+ARG IMAGE_VERSION=3.9.3-ceriku1
+LABEL org.opencontainers.image.title="Ceriku Kong Gateway" \
+      org.opencontainers.image.description="Kong Gateway built from the SaipulImdn/kong source fork" \
+      org.opencontainers.image.version="${IMAGE_VERSION}" \
+      org.opencontainers.image.licenses="Apache-2.0"
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    KONG_PREFIX=/usr/local/kong \
+    KONG_DATABASE=off \
+    KONG_PLUGINS=bundled,ceriku-auth \
+    KONG_DECLARATIVE_CONFIG=/etc/kong/ceriku.yml \
+    KONG_NGINX_DAEMON=off
+
+COPY --from=builder /out/kong.deb /tmp/kong.deb
+COPY build/dockerfiles/entrypoint.sh /entrypoint.sh
+COPY build/ceriku/kong.yml /etc/kong/ceriku.yml
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates tzdata /tmp/kong.deb \
+    && rm -f /tmp/kong.deb \
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod 0755 /entrypoint.sh \
+    && old_uid="$(id -u kong)" \
+    && old_gid="$(id -g kong)" \
+    && groupmod --gid 10001 kong \
+    && usermod --uid 10001 --gid 10001 kong \
+    && find /etc/kong /usr/local -xdev \( -uid "$old_uid" -o -gid "$old_gid" \) -exec chown -h 10001:10001 {} + \
+    && kong config parse /etc/kong/ceriku.yml
+
+USER 10001:10001
+EXPOSE 9090 8001 8100
+STOPSIGNAL SIGQUIT
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["kong", "docker-start"]

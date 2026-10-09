@@ -1,0 +1,249 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: keeper
+    url: http://keeper-auth:8080
+    connect_timeout: 2000
+    read_timeout: 25000
+    write_timeout: 25000
+    retries: 0
+    routes:
+      - name: keeper-auth
+        paths: ["/api/v1/auth/"]
+        strip_path: false
+      - name: keeper-users
+        paths: ["/api/v1/users/"]
+        strip_path: false
+      - name: keeper-posts
+        paths: ["/api/v1/posts/"]
+        strip_path: false
+      - name: keeper-comments
+        paths: ["/api/v1/comments/"]
+        strip_path: false
+      - name: keeper-likes
+        paths: ["/api/v1/likes/"]
+        strip_path: false
+      - name: keeper-follows
+        paths: ["/api/v1/follows/"]
+        strip_path: false
+      - name: keeper-vault
+        paths: ["/api/v1/vault/"]
+        strip_path: false
+      - name: keeper-subscriptions
+        paths: ["/api/v1/subscriptions/"]
+        strip_path: false
+      - name: keeper-subscription-plans
+        paths: ["~^/api/v1/subscriptions/plans$"]
+        regex_priority: 100
+        strip_path: false
+      - name: keeper-admin-subscriptions
+        paths: ["/api/v1/admin/subscriptions/"]
+        strip_path: false
+      - name: keeper-notification-register
+        paths: ["~^/api/v1/notifications/register$"]
+        regex_priority: 100
+        strip_path: false
+
+  - name: clockwerk
+    url: http://clockwerk:8080
+    connect_timeout: 2000
+    read_timeout: 25000
+    write_timeout: 25000
+    retries: 0
+    routes:
+      - name: clockwerk-drive
+        paths: ["/api/v1/drive/"]
+        strip_path: false
+      - name: clockwerk-dashboard
+        paths: ["/api/v1/dashboard/"]
+        strip_path: false
+      - name: clockwerk-secure
+        paths: ["/api/v1/secure/"]
+        strip_path: false
+
+  - name: clockwerk-drive-upload
+    url: http://clockwerk:8080
+    connect_timeout: 5000
+    read_timeout: 8000000
+    write_timeout: 8000000
+    retries: 0
+    routes:
+      - name: clockwerk-drive-upload
+        paths: ["/api/v1/drive/upload"]
+        strip_path: false
+        request_buffering: false
+
+  - name: clockwerk-upload
+    url: http://clockwerk:8080
+    connect_timeout: 5000
+    read_timeout: 600000
+    write_timeout: 600000
+    retries: 0
+    routes:
+      - name: clockwerk-upload
+        paths: ["/api/v1/upload/"]
+        strip_path: false
+        request_buffering: false
+
+  - name: clockwerk-storage
+    url: http://clockwerk:8080
+    connect_timeout: 5000
+    read_timeout: 500000
+    write_timeout: 500000
+    retries: 0
+    routes:
+      - name: clockwerk-storage
+        paths: ["/api/v1/storage/"]
+        strip_path: false
+        request_buffering: false
+
+  - name: enchantress
+    url: http://enchantress-collab:8087
+    connect_timeout: 2000
+    read_timeout: 25000
+    write_timeout: 25000
+    retries: 0
+    routes:
+      - name: enchantress-friends
+        paths: ["/api/v1/friends/"]
+        strip_path: false
+      - name: enchantress-share-folder
+        paths: ["~^/api/v1/storage/folders/share$"]
+        regex_priority: 100
+        strip_path: false
+      - name: enchantress-share-folder-batch
+        paths: ["~^/api/v1/storage/folders/share-batch$"]
+        regex_priority: 100
+        strip_path: false
+      - name: enchantress-shares
+        paths: ["~^/api/v1/storage/shares$"]
+        regex_priority: 100
+        strip_path: false
+      - name: enchantress-shared
+        paths: ["~^/api/v1/storage/shared$"]
+        regex_priority: 100
+        strip_path: false
+      - name: enchantress-shared-subtree
+        paths: ["/api/v1/storage/shared/"]
+        strip_path: false
+
+  - name: arcwarden
+    url: http://arcwarden-dedup:8088
+    connect_timeout: 2000
+    read_timeout: 25000
+    write_timeout: 25000
+    retries: 0
+    routes:
+      - name: arcwarden-duplicates
+        paths: ["/api/v1/duplicates/"]
+        strip_path: false
+      - name: arcwarden-music
+        paths: ["/api/v1/music/"]
+        strip_path: false
+      - name: arcwarden-media
+        paths: ["/api/v1/media/"]
+        strip_path: false
+
+  - name: rubick
+    url: http://rubick-profile:8084
+    connect_timeout: 2000
+    read_timeout: 25000
+    write_timeout: 25000
+    retries: 0
+    routes:
+      - name: rubick-profile
+        paths: ["/api/v1/profile/"]
+        strip_path: false
+      - name: rubick-dashboard-theme
+        paths: ["~^/api/v1/dashboard/theme$"]
+        regex_priority: 100
+        strip_path: false
+      - name: rubick-features
+        paths: ["~^/api/v1/features$"]
+        regex_priority: 100
+        strip_path: false
+      - name: rubick-features
+        paths: ["~^/api/v1/features$"]
+        regex_priority: 100
+        strip_path: false
+      - name: rubick-forgot-password
+        paths: ["/api/v1/forgot-password/"]
+        strip_path: false
+      - name: rubick-app
+        paths: ["/api/v1/app/"]
+        strip_path: false
+
+  - name: invoker
+    url: http://invoker-activity:8083
+    connect_timeout: 2000
+    read_timeout: 25000
+    write_timeout: 25000
+    retries: 0
+    routes:
+      - name: invoker-activities
+        paths: ["~^/api/v1/activities$"]
+        regex_priority: 100
+        strip_path: false
+      - name: invoker-activities-subtree
+        paths: ["/api/v1/activities/"]
+        strip_path: false
+      - name: invoker-notifications
+        paths: ["/api/v1/notifications/"]
+        strip_path: false
+
+  - name: arcwarden-sync
+    url: http://arcwarden-dedup:8088
+    connect_timeout: 2000
+    read_timeout: 120000
+    write_timeout: 120000
+    retries: 0
+    routes:
+      - name: arcwarden-sync-long
+        paths: ["/api/v1/sync/"]
+        strip_path: false
+
+  - name: kong-status
+    url: http://127.0.0.1:8100
+    connect_timeout: 1000
+    read_timeout: 5000
+    write_timeout: 5000
+    retries: 0
+    routes:
+      - name: gateway-health
+        paths: ["~^/health$"]
+        regex_priority: 100
+        strip_path: false
+      - name: gateway-metrics
+        paths: ["~^/metrics$"]
+        regex_priority: 100
+        strip_path: false
+
+  - name: unmatched
+    url: http://127.0.0.1:1
+    connect_timeout: 1000
+    read_timeout: 1000
+    write_timeout: 1000
+    retries: 0
+    routes:
+      - name: unmatched
+        paths: ["/"]
+        strip_path: false
+
+plugins:
+  - name: ceriku-auth
+    config:
+      default_body_limit: 1048576
+      upload_body_limit: 104857600
+      public_rate_limit: 60
+      authenticated_rate_limit: 600
+      upload_rate_limit: 30
+      auth_route_rate_limit: 30
+      forgot_password_rate_limit: 10
+      window_ms: 60000
+  - name: prometheus
+    config:
+      status_code_metrics: true
+      latency_metrics: true
+      bandwidth_metrics: true
+      upstream_health_metrics: true
