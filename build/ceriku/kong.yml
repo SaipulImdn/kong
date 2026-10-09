@@ -163,10 +163,6 @@ services:
         paths: ["~^/api/v1/features$"]
         regex_priority: 100
         strip_path: false
-      - name: rubick-features
-        paths: ["~^/api/v1/features$"]
-        regex_priority: 100
-        strip_path: false
       - name: rubick-forgot-password
         paths: ["/api/v1/forgot-password/"]
         strip_path: false
