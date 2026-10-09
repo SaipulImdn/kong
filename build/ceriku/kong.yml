@@ -34,14 +34,14 @@ services:
         paths: ["/api/v1/subscriptions/"]
         strip_path: false
       - name: keeper-subscription-plans
-        paths: ["~^/api/v1/subscriptions/plans$"]
+        paths: ["~/^/api/v1/subscriptions/plans$"]
         regex_priority: 100
         strip_path: false
       - name: keeper-admin-subscriptions
         paths: ["/api/v1/admin/subscriptions/"]
         strip_path: false
       - name: keeper-notification-register
-        paths: ["~^/api/v1/notifications/register$"]
+        paths: ["~/^/api/v1/notifications/register$"]
         regex_priority: 100
         strip_path: false
 
@@ -109,19 +109,19 @@ services:
         paths: ["/api/v1/friends/"]
         strip_path: false
       - name: enchantress-share-folder
-        paths: ["~^/api/v1/storage/folders/share$"]
+        paths: ["~/^/api/v1/storage/folders/share$"]
         regex_priority: 100
         strip_path: false
       - name: enchantress-share-folder-batch
-        paths: ["~^/api/v1/storage/folders/share-batch$"]
+        paths: ["~/^/api/v1/storage/folders/share-batch$"]
         regex_priority: 100
         strip_path: false
       - name: enchantress-shares
-        paths: ["~^/api/v1/storage/shares$"]
+        paths: ["~/^/api/v1/storage/shares$"]
         regex_priority: 100
         strip_path: false
       - name: enchantress-shared
-        paths: ["~^/api/v1/storage/shared$"]
+        paths: ["~/^/api/v1/storage/shared$"]
         regex_priority: 100
         strip_path: false
       - name: enchantress-shared-subtree
@@ -156,11 +156,11 @@ services:
         paths: ["/api/v1/profile/"]
         strip_path: false
       - name: rubick-dashboard-theme
-        paths: ["~^/api/v1/dashboard/theme$"]
+        paths: ["~/^/api/v1/dashboard/theme$"]
         regex_priority: 100
         strip_path: false
       - name: rubick-features
-        paths: ["~^/api/v1/features$"]
+        paths: ["~/^/api/v1/features$"]
         regex_priority: 100
         strip_path: false
       - name: rubick-forgot-password
@@ -178,7 +178,7 @@ services:
     retries: 0
     routes:
       - name: invoker-activities
-        paths: ["~^/api/v1/activities$"]
+        paths: ["~/^/api/v1/activities$"]
         regex_priority: 100
         strip_path: false
       - name: invoker-activities-subtree
@@ -207,11 +207,11 @@ services:
     retries: 0
     routes:
       - name: gateway-health
-        paths: ["~^/health$"]
+        paths: ["~/^/health$"]
         regex_priority: 100
         strip_path: false
       - name: gateway-metrics
-        paths: ["~^/metrics$"]
+        paths: ["~/^/metrics$"]
         regex_priority: 100
         strip_path: false
 
