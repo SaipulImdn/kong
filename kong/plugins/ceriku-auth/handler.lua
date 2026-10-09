@@ -576,9 +576,12 @@ function Handler:log()
   local started = kong.ctx.shared.ceriku_started or ngx.now()
   local duration = math.floor((ngx.now() - started) * 1000)
   local route = kong.ctx.shared.ceriku_route or "unmatched"
+  local now = ngx.now()
+  local seconds = math.floor(now)
+  local milliseconds = math.floor((now - seconds) * 1000)
   kong.log.info(cjson.encode({
     level = "info",
-    timestamp = ngx.utctime(),
+    timestamp = os.date("!%Y-%m-%dT%H:%M:%S", seconds) .. string.format(".%03dZ", milliseconds),
     service = "ceriku-kong",
     msg = "request completed",
     requestId = ngx.var.request_id,
