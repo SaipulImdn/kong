@@ -44,7 +44,8 @@ RUN apt-get update \
     && find /etc/kong /usr/local -xdev \( -uid "$old_uid" -o -gid "$old_gid" \) -exec chown -h 10001:10001 {} + \
     && chown -R 10001:10001 /usr/local/kong \
     && chown 10001:10001 /usr/local/bin/kong \
-    && kong config parse /etc/kong/ceriku.yml
+    && kong config parse /etc/kong/ceriku.yml \
+    && chown -R 10001:10001 /usr/local/kong
 
 USER 10001:10001
 EXPOSE 9090 8001 8100
