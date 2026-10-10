@@ -573,9 +573,13 @@ function Handler:header_filter()
 end
 
 function Handler:log()
+  local route = kong.ctx.shared.ceriku_route or "unmatched"
+  if route == "/health" or route == "/livez" or route == "/readyz" then
+    return
+  end
+
   local started = kong.ctx.shared.ceriku_started or ngx.now()
   local duration = math.floor((ngx.now() - started) * 1000)
-  local route = kong.ctx.shared.ceriku_route or "unmatched"
   local now = ngx.now()
   local seconds = math.floor(now)
   local milliseconds = math.floor((now - seconds) * 1000)

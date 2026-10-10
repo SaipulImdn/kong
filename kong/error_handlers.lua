@@ -1,17 +1,13 @@
 local kong = kong
-local find = string.find
 local fmt  = string.format
-local request_id = require "kong.observability.tracing.request_id"
-local tools_http = require "kong.tools.http"
-
-
-local CONTENT_TYPE    = "Content-Type"
-local ACCEPT          = "Accept"
-local TYPE_GRPC       = "application/grpc"
+local CONTENT_TYPE = "Content-Type"
+local cjson = require "cjson.safe"
 
 
 local BODIES = {
   [400] = "Bad request",
+  [401] = "Unauthorized",
+  [403] = "Forbidden",
   [404] = "Not found",
   [405] = "Method not allowed",
   [408] = "Request timeout",
@@ -20,6 +16,7 @@ local BODIES = {
   [413] = "Payload too large",
   [414] = "URI too long",
   [417] = "Expectation failed",
+  [429] = "Too many requests. Please try again later.",
   [494] = "Request header or cookie too large",
   [500] = "An unexpected error occurred",
   [502] = "An invalid response was received from the upstream server",
@@ -27,10 +24,30 @@ local BODIES = {
   [504] = "The upstream server is timing out",
 }
 
+local RESPONSE_CODES = {
+  [400] = "40",
+  [401] = "01",
+  [403] = "03",
+  [404] = "04",
+  [405] = "40",
+  [408] = "54",
+  [411] = "40",
+  [412] = "40",
+  [413] = "13",
+  [414] = "40",
+  [417] = "40",
+  [429] = "29",
+  [494] = "40",
+  [500] = "50",
+  [502] = "52",
+  [503] = "53",
+  [504] = "54",
+}
+
 
 local get_body
 do
-  local DEFAULT_FMT = "The upstream server responded with %d"
+  local DEFAULT_FMT = "Request failed with HTTP status %d"
 
   get_body = function(status)
     local body = BODIES[status]
@@ -48,14 +65,6 @@ end
 
 
 return function(ctx)
-  local accept_header = kong.request.get_header(ACCEPT)
-  if accept_header == nil then
-    accept_header = kong.request.get_header(CONTENT_TYPE)
-    if accept_header == nil then
-      accept_header = kong.configuration.error_default_type
-    end
-  end
-
   local status = kong.response.get_status()
   local message = get_body(status)
 
@@ -66,17 +75,13 @@ return function(ctx)
     status = 400
   end
 
-  local headers
-  if find(accept_header, TYPE_GRPC, nil, true) == 1 then
-    message = { message = message }
-
-  else
-    local mime_type = tools_http.get_response_type(accept_header)
-    local rid = request_id.get() or ""
-    message = fmt(tools_http.get_error_template(mime_type), message, rid)
-    headers = { [CONTENT_TYPE] = mime_type }
-
-  end
+  local response_code = RESPONSE_CODES[status]
+    or (status >= 500 and "50" or "40")
+  local body = {
+    response_code = response_code,
+    response_desc = message,
+    response_data = cjson.null,
+  }
 
   -- Reset relevant context values
   ctx.buffered_proxying = nil
@@ -88,5 +93,5 @@ return function(ctx)
     ctx.delayed_response_callback = nil
   end
 
-  return kong.response.exit(status, message, headers)
+  return kong.response.exit(status, body, { [CONTENT_TYPE] = "application/json" })
 end
