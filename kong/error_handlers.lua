@@ -1,6 +1,9 @@
 local kong = kong
+local find = string.find
 local fmt  = string.format
 local CONTENT_TYPE = "Content-Type"
+local ACCEPT = "Accept"
+local TYPE_GRPC = "application/grpc"
 local cjson = require "cjson.safe"
 
 
@@ -77,6 +80,12 @@ return function(ctx)
 
   local response_code = RESPONSE_CODES[status]
     or (status >= 500 and "50" or "40")
+
+  local accept_header = kong.request.get_header(ACCEPT)
+  if accept_header and find(accept_header, TYPE_GRPC, 1, true) == 1 then
+    return kong.response.exit(status, { message = message })
+  end
+
   local body = {
     response_code = response_code,
     response_desc = message,
