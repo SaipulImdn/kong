@@ -6,7 +6,7 @@ Ceriku-specific code lives in:
 
 - `kong/plugins/ceriku-auth/`: request signature checks, Redis session resolution and rate limits, identity signing, CORS, and safe request logs.
 - `build/ceriku/kong.yml`: DB-less routes and plugin configuration.
-- `Dockerfile.ceriku`: builds Kong's Debian package from this checkout, then assembles the Ceriku image and checks the declarative config.
+- `Containerfile.ceriku`: builds Kong's Debian package from this checkout, then assembles the Ceriku image and checks the declarative config. Build it with Podman using `podman build -f Containerfile.ceriku`.
 
 Kong-generated HTTP errors use the Ceriku JSON envelope `{response_code, response_desc, response_data}`. The HTTP status remains the transport status; upstream service response bodies are passed through unchanged.
 
